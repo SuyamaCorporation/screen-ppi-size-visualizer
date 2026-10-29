@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ディスプレイ PPI・実寸 ビジュアライザ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen p-4">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">ディスプレイ PPI・実寸 ビジュアライザ</h1>
+
+    <!-- プリセット選択 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-3">デバイスプリセット</h2>
+      <div class="flex flex-wrap gap-2" role="group" aria-label="デバイスプリセット">
+        <button class="preset-btn bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm px-3 py-1.5 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" data-w="2556" data-h="1179" data-inch="6.12" tabindex="0">iPhone 15</button>
+        <button class="preset-btn bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm px-3 py-1.5 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" data-w="2796" data-h="1290" data-inch="6.7" tabindex="0">iPhone 15 Pro Max</button>
+        <button class="preset-btn bg-purple-100 hover:bg-purple-200 text-purple-800 text-sm px-3 py-1.5 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" data-w="3024" data-h="1964" data-inch="14.2" tabindex="0">MacBook Pro 14"</button>
+        <button class="preset-btn bg-purple-100 hover:bg-purple-200 text-purple-800 text-sm px-3 py-1.5 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" data-w="3456" data-h="2234" data-inch="16.2" tabindex="0">MacBook Pro 16"</button>
+        <button class="preset-btn bg-green-100 hover:bg-green-200 text-green-800 text-sm px-3 py-1.5 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" data-w="1920" data-h="1080" data-inch="24" tabindex="0">FHD 24" モニター</button>
+        <button class="preset-btn bg-green-100 hover:bg-green-200 text-green-800 text-sm px-3 py-1.5 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" data-w="3840" data-h="2160" data-inch="55" tabindex="0">4K TV 55"</button>
+        <button class="preset-btn bg-orange-100 hover:bg-orange-200 text-orange-800 text-sm px-3 py-1.5 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" data-w="2560" data-h="1600" data-inch="13.6" tabindex="0">MacBook Air 13"</button>
+        <button class="preset-btn bg-orange-100 hover:bg-orange-200 text-orange-800 text-sm px-3 py-1.5 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" data-w="3840" data-h="2160" data-inch="27" tabindex="0">4K モニター 27"</button>
+      </div>
+    </div>
+
+    <!-- 入力フォーム -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">手動入力</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1" for="resW">横解像度（px）</label>
+          <input id="resW" type="number" min="1" value="2556" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="横解像度" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1" for="resH">縦解像度（px）</label>
+          <input id="resH" type="number" min="1" value="1179" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="縦解像度" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1" for="diagInch">対角インチ（inch）</label>
+          <input id="diagInch" type="number" min="0.1" step="0.01" value="6.12" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="対角インチ" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1" for="deviceName">デバイス名</label>
+          <input id="deviceName" type="text" placeholder="例: iPhone 15" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="デバイス名" />
+        </div>
+      </div>
+      <div class="flex gap-3 mt-4">
+        <button id="calcBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" tabindex="0" aria-label="計算・追加">計算 &amp; 比較追加</button>
+        <button id="clearCompBtn" class="bg-gray-400 hover:bg-gray-500 text-white text-sm font-medium px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400" tabindex="0" aria-label="比較リストをクリア">クリア</button>
+      </div>
+    </div>
+
+    <!-- PPI結果 -->
+    <div id="ppiResult" class="bg-white rounded-lg shadow p-6 mb-6 hidden">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">計算結果</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-blue-50 rounded-lg p-4 text-center">
+          <div class="text-3xl font-bold text-blue-700" id="ppiVal">-</div>
+          <div class="text-sm text-gray-500 mt-1">PPI</div>
+        </div>
+        <div class="bg-green-50 rounded-lg p-4 text-center">
+          <div class="text-3xl font-bold text-green-700" id="diagPx">-</div>
+          <div class="text-sm text-gray-500 mt-1">対角解像度 (px)</div>
+        </div>
+        <div class="bg-purple-50 rounded-lg p-4 text-center">
+          <div class="text-2xl font-bold text-purple-700" id="physW">-</div>
+          <div class="text-sm text-gray-500 mt-1">物理幅 (mm)</div>
+        </div>
+        <div class="bg-orange-50 rounded-lg p-4 text-center">
+          <div class="text-2xl font-bold text-orange-700" id="physH">-</div>
+          <div class="text-sm text-gray-500 mt-1">物理高さ (mm)</div>
+        </div>
+      </div>
+
+      <!-- Canvas実寸プレビュー -->
+      <h3 class="text-base font-semibold text-gray-700 mb-2">実寸プレビュー（1cm / 1inch 基準スケール）</h3>
+      <p class="text-xs text-gray-400 mb-3">※ モニターの実際のDPIによってブラウザ上の「実寸」は変わります。参考値としてご利用ください。</p>
+      <div class="overflow-x-auto">
+        <canvas id="sizeCanvas" class="border border-gray-200 rounded" role="img" aria-label="実寸プレビューキャンバス"></canvas>
+      </div>
+    </div>
+
+    <!-- 比較テーブル -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">デバイス比較テーブル</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm" role="grid" aria-label="デバイス比較">
+          <thead>
+            <tr class="bg-gray-100 text-gray-600 text-left">
+              <th class="px-3 py-2 font-medium" scope="col">デバイス名</th>
+              <th class="px-3 py-2 font-medium" scope="col">解像度</th>
+              <th class="px-3 py-2 font-medium" scope="col">対角(inch)</th>
+              <th class="px-3 py-2 font-medium" scope="col">PPI</th>
+              <th class="px-3 py-2 font-medium" scope="col">物理幅(mm)</th>
+              <th class="px-3 py-2 font-medium" scope="col">物理高さ(mm)</th>
+              <th class="px-3 py-2 font-medium" scope="col">品質</th>
+              <th class="px-3 py-2 font-medium" scope="col">操作</th>
+            </tr>
+          </thead>
+          <tbody id="compareBody">
+            <tr><td colspan="8" class="text-center text-gray-400 py-6">「計算 &amp; 比較追加」でデバイスを追加してください。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let compareList = [];
+
+    function loadStorage() {
+      try {
+        const d = localStorage.getItem('ppi_viz_v1');
+        if (d) compareList = JSON.parse(d);
+      } catch(e) { compareList = []; }
+    }
+
+    function saveStorage() {
+      localStorage.setItem('ppi_viz_v1', JSON.stringify(compareList));
+    }
+
+    function calcPPI(w, h, inch) {
+      const diag = Math.sqrt(w * w + h * h);
+      return diag / inch;
+    }
+
+    function ppiQuality(ppi) {
+      if (ppi >= 400) return { label: '超高精細 (Retina+)', cls: 'text-blue-600' };
+      if (ppi >= 220) return { label: '高精細 (Retina)', cls: 'text-green-600' };
+      if (ppi >= 150) return { label: '標準+', cls: 'text-yellow-600' };
+      if (ppi >= 90) return { label: '標準', cls: 'text-orange-500' };
+      return { label: '低密度', cls: 'text-red-500' };
+    }
+
+    function drawCanvas(ppi) {
+      const canvas = document.getElementById('sizeCanvas');
+      const ctx = canvas.getContext('2d');
+      const screenDPI = 96; // ブラウザデフォルト想定
+      const INCH_TO_PX = screenDPI;
+      const CM_TO_PX = screenDPI / 2.54;
+
+      const paddingX = 20;
+      const paddingY = 40;
+      const barH = 80;
+      const w1cm = CM_TO_PX;
+      const w1inch = INCH_TO_PX;
+      const totalW = Math.max(w1cm, w1inch) + paddingX * 2 + 60;
+
+      canvas.width = Math.ceil(totalW);
+      canvas.height = barH * 2 + paddingY * 3 + 20;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 1cm バー
+      ctx.fillStyle = '#3b82f6';
+      ctx.fillRect(paddingX, paddingY, w1cm, barH);
+      ctx.fillStyle = '#1e40af';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText('1 cm', paddingX, paddingY - 8);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '11px sans-serif';
+      const pxPer1cm = (ppi / 2.54);
+      ctx.fillText(`${pxPer1cm.toFixed(1)} px`, paddingX + 4, paddingY + barH / 2 + 4);
+
+      // 1inch バー
+      ctx.fillStyle = '#8b5cf6';
+      ctx.fillRect(paddingX, paddingY * 2 + barH, w1inch, barH);
+      ctx.fillStyle = '#5b21b6';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText('1 inch', paddingX, paddingY * 2 + barH - 8);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '11px sans-serif';
+      ctx.fillText(`${ppi.toFixed(1)} px`, paddingX + 4, paddingY * 2 + barH + barH / 2 + 4);
+
+      // 目盛り（cmごと）
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.lineWidth = 1;
+      for (let i = 1; i * CM_TO_PX <= totalW; i++) {
+        ctx.beginPath();
+        ctx.moveTo(paddingX + i * CM_TO_PX, paddingY);
+        ctx.lineTo(paddingX + i * CM_TO_PX, paddingY + barH * 2 + paddingY);
+        ctx.stroke();
+        ctx.fillStyle = '#9ca3af';
+        ctx.font = '10px sans-serif';
+        ctx.fillText(`${i}cm`, paddingX + i * CM_TO_PX + 2, paddingY + barH * 2 + paddingY + 14);
+      }
+    }
+
+    function renderResult(w, h, inch, name) {
+      const ppi = calcPPI(w, h, inch);
+      const diag = Math.sqrt(w * w + h * h);
+      const physW = (w / ppi * 25.4).toFixed(1);
+      const physH = (h / ppi * 25.4).toFixed(1);
+
+      document.getElementById('ppiResult').classList.remove('hidden');
+      document.getElementById('ppiVal').textContent = ppi.toFixed(1);
+      document.getElementById('diagPx').textContent = Math.round(diag).toLocaleString();
+      document.getElementById('physW').textContent = physW + ' mm';
+      document.getElementById('physH').textContent = physH + ' mm';
+      drawCanvas(ppi);
+    }
+
+    function renderCompare() {
+      const tbody = document.getElementById('compareBody');
+      while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+      if (compareList.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 8;
+        td.className = 'text-center text-gray-400 py-6';
+        td.textContent = '「計算 & 比較追加」でデバイスを追加してください。';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+      compareList.forEach((item, i) => {
+        const q = ppiQuality(item.ppi);
+        const tr = document.createElement('tr');
+        tr.className = i % 2 === 0 ? 'border-b border-gray-100' : 'border-b border-gray-100 bg-gray-50';
+        const cells = [
+          item.name || '(無名)',
+          `${item.w} × ${item.h}`,
+          item.inch,
+          item.ppi.toFixed(1),
+          item.physW,
+          item.physH,
+        ];
+        cells.forEach(txt => {
+          const td = document.createElement('td');
+          td.className = 'px-3 py-2';
+          td.textContent = txt;
+          tr.appendChild(td);
+        });
+        const tdQ = document.createElement('td');
+        tdQ.className = 'px-3 py-2 font-medium ' + q.cls;
+        tdQ.textContent = q.label;
+        tr.appendChild(tdQ);
+
+        const tdDel = document.createElement('td');
+        tdDel.className = 'px-3 py-2';
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '削除';
+        delBtn.className = 'text-red-500 hover:text-red-700 text-xs underline focus:outline-none';
+        delBtn.setAttribute('aria-label', `${item.name || '(無名)'}を削除`);
+        delBtn.setAttribute('tabindex', '0');
+        delBtn.addEventListener('click', () => {
+          compareList.splice(i, 1);
+          saveStorage();
+          renderCompare();
+        });
+        tdDel.appendChild(delBtn);
+        tr.appendChild(tdDel);
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('resW').value = btn.dataset.w;
+        document.getElementById('resH').value = btn.dataset.h;
+        document.getElementById('diagInch').value = btn.dataset.inch;
+        document.getElementById('deviceName').value = btn.textContent;
+      });
+    });
+
+    document.getElementById('calcBtn').addEventListener('click', () => {
+      const w = parseInt(document.getElementById('resW').value);
+      const h = parseInt(document.getElementById('resH').value);
+      const inch = parseFloat(document.getElementById('diagInch').value);
+      const name = document.getElementById('deviceName').value.trim();
+      if (!w || !h || !inch) { alert('解像度と対角インチを入力してください。'); return; }
+      const ppi = calcPPI(w, h, inch);
+      const physW = (w / ppi * 25.4).toFixed(1);
+      const physH = (h / ppi * 25.4).toFixed(1);
+      renderResult(w, h, inch, name);
+      compareList.push({ w, h, inch, name: name || `${w}×${h} ${inch}"`, ppi, physW, physH });
+      saveStorage();
+      renderCompare();
+    });
+
+    document.getElementById('clearCompBtn').addEventListener('click', () => {
+      compareList = [];
+      saveStorage();
+      renderCompare();
+    });
+
+    loadStorage();
+    renderCompare();
+    // 初期表示
+    if (compareList.length > 0) {
+      const last = compareList[compareList.length - 1];
+      renderResult(last.w, last.h, last.inch, last.name);
+    }
+  </script>
+</body>
+</html>
